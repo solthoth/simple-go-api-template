@@ -55,17 +55,11 @@ spec:
               - solthoth
 
   steps:
-    - id: fetch-base
-      name: Fetch Base Skeleton
-      action: fetch:plain
-      input:
-        url: https://github.com/solthoth/hello-world-api.go
-
     - id: fetch-template-files
       name: Overlay Templated Files
       action: fetch:template
       input:
-        url: ./go-skeleton
+        url: ./skeleton
         values:
           name: ${{ parameters.name }}
           description: ${{ parameters.description }}
