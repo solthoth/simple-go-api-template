@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-world-api-go
-  namespace: hello-world-api-go
+  name: ${{ values.name }}
+  namespace: ${{ values.name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hello-world-api-go
+      app: ${{ values.name }}
   template:
     metadata:
       labels:
-        app: hello-world-api-go
+        app: ${{ values.name }}
     spec:
       containers:
-        - name: hello-world-api-go
-          image: ghcr.io/solthoth/hello-world-api.go:latest
+        - name: ${{ values.name }}
+          image: ghcr.io/${{ values.destination.owner }}/${{ values.destination.repo }}:latest
           ports:
             - name: http
               containerPort: 8080

@@ -1,0 +1,107 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: simple-go-api-template
+  title: Go Hello World API
+  description: Creates a new Go REST API service (Gin framework, port 8080) using the hello-world-api.go skeleton, publishes to GitHub, and registers in the catalog.
+  tags:
+    - go
+    - api
+    - service
+spec:
+  owner: user:guest
+  type: service
+
+  parameters:
+    - title: Component Information
+      required:
+        - name
+        - description
+        - owner
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name for the new service component
+          ui:autofocus: true
+          ui:field: EntityNamePicker
+        description:
+          title: Description
+          type: string
+          description: A short description of the service
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component (e.g. user:guest or group:my-team)
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind:
+                - Group
+                - User
+
+    - title: Repository Location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+            allowedOwners:
+              - solthoth
+
+  steps:
+    - id: fetch-base
+      name: Fetch Base Skeleton
+      action: fetch:plain
+      input:
+        url: https://github.com/solthoth/hello-world-api.go
+
+    - id: fetch-template-files
+      name: Overlay Templated Files
+      action: fetch:template
+      input:
+        url: ./go-skeleton
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+          destination: ${{ parameters.repoUrl | parseRepoUrl }}
+
+    - id: publish
+      name: Publish to GitHub
+      action: publish:github
+      input:
+        description: ${{ parameters.description }}
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: main
+
+    - id: register
+      name: Register in Catalog
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+
+    - id: notify
+      name: Notify
+      action: notification:send
+      input:
+        recipients: entity
+        entityRefs:
+          - user:default/guest
+        title: New Go API service created
+        info: 'Your service "${{ parameters.name }}" has been created and registered in the catalog.'
+        severity: normal
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}

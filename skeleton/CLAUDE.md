@@ -20,7 +20,7 @@ A minimal Go REST API using [Gin](https://github.com/gin-gonic/gin), designed to
 go run .
 
 # Build binary
-go build -o hello-world-api .
+go build -o ${{ values.name }} .
 
 # Run all tests
 go test ./...
@@ -38,8 +38,8 @@ go mod tidy
 Multi-stage build: compiles with `golang:1.26-alpine`, runs in `scratch` (no base OS, ~10MB final image).
 
 ```bash
-docker build -t hello-world-api .
-docker run -p 8080:8080 hello-world-api
+docker build -t ${{ values.name }} .
+docker run -p 8080:8080 ${{ values.name }}
 ```
 
 The binary is built with `CGO_ENABLED=0` and `-ldflags="-w -s"` for a static, stripped binary.
@@ -48,7 +48,7 @@ The binary is built with `CGO_ENABLED=0` and `-ldflags="-w -s"` for a static, st
 
 The workflow at [.github/workflows/docker-publish.yml](.github/workflows/docker-publish.yml):
 - Triggers on push to `main` (builds and pushes) and on pull requests (builds only)
-- Publishes to `ghcr.io/solthoth/hello-world-api.go`
+- Publishes to `ghcr.io/${{ values.destination.owner }}/${{ values.destination.repo }}`
 - Tags: `latest` (on main) and `sha-<commit>` (always)
 - Uses `GITHUB_TOKEN` automatically — no secrets to configure
 

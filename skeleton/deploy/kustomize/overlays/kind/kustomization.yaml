@@ -9,5 +9,5 @@ patches:
 
 # Kind-friendly defaults
 images:
-  - name: ghcr.io/solthoth/hello-world-api.go
+  - name: ghcr.io/${{ values.destination.owner }}/${{ values.destination.repo }}
     newTag: latest

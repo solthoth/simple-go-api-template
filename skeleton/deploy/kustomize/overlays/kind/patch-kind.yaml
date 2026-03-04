@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-world-api-go
-  namespace: hello-world-api-go
+  name: ${{ values.name }}
+  namespace: ${{ values.name }}
 spec:
   replicas: 1
   template:
     spec:
       containers:
-        - name: hello-world-api-go
+        - name: ${{ values.name }}
           env:
             - name: ENV
               value: kind

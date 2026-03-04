@@ -1,4 +1,4 @@
-module github.com/solthoth/hello-world-api.go
+module github.com/${{ values.destination.owner }}/${{ values.destination.repo }}
 
 go 1.25.0
 

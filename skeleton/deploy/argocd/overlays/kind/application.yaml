@@ -3,14 +3,14 @@ kind: Application
 metadata:
   annotations:
     notifications.argoproj.io/subscribe.cd-visibility-trigger.cd-visibility-webhook: ""
-  name: solthoth-hello-world-api-go
+  name: ${{ values.destination.owner }}-${{ values.name }}
 spec:
   destination:
-    namespace: app-solthoth-hello-world-api-go
+    namespace: app-${{ values.destination.owner }}-${{ values.name }}
     server: https://kubernetes.default.svc
   source:
     path: deploy/kustomize/overlays/kind
-    repoURL: https://github.com/solthoth/hello-world-api.go.git
+    repoURL: https://github.com/${{ values.destination.owner }}/${{ values.destination.repo }}.git
     targetRevision: main
   project: kind-cluster
   syncPolicy:
